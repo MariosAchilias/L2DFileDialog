@@ -25,6 +25,12 @@
 #include <filesystem>
 #include <sstream>
 
+#ifdef _WIN32
+	const char path_separator = '\\';
+#else
+	const char path_separator = '/';
+#endif
+
 using namespace std::chrono_literals;
 
 namespace FileDialog {
@@ -240,7 +246,7 @@ namespace FileDialog {
 			}
 			ImGui::EndChild();
 
-			std::string selected_file_path = file_dialog_current_path + (file_dialog_current_path.back() == '\\' ? "" : "\\") + (file_dialog_current_folder.size() > 0 ? file_dialog_current_folder : file_dialog_current_file);
+			std::string selected_file_path = file_dialog_current_path + (file_dialog_current_path.back() == path_separator ? "" : std::string(1, path_separator)) + (file_dialog_current_folder.size() > 0 ? file_dialog_current_folder : file_dialog_current_file);
 			char* buf = &selected_file_path[0];
 			ImGui::PushItemWidth(724);
 			ImGui::InputText("##text", buf, sizeof(buf), ImGuiInputTextFlags_ReadOnly);
@@ -278,7 +284,7 @@ namespace FileDialog {
 						strcpy(new_folder_error, "Folder name can't be empty");
 					}
 					else {
-						std::string new_file_path = file_dialog_current_path + (file_dialog_current_path.back() == '\\' ? "" : "\\") + new_folder_name;
+						std::string new_file_path = file_dialog_current_path + (file_dialog_current_path.back() == path_separator ? "" : std::string(1, path_separator)) + new_folder_name;
 						std::filesystem::create_directory(new_file_path);
 						ImGui::CloseCurrentPopup();
 					}
@@ -300,7 +306,7 @@ namespace FileDialog {
 				ImGui::TextUnformatted(file_dialog_current_folder.c_str());
 				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 6);
 				if (ImGui::Button("Yes")) {
-					std::filesystem::remove(file_dialog_current_path + (file_dialog_current_path.back() == '\\' ? "" : "\\") + file_dialog_current_folder);
+					std::filesystem::remove(file_dialog_current_path + (file_dialog_current_path.back() == path_separator ? "" : std::string(1, path_separator)) + file_dialog_current_folder);
 					ImGui::CloseCurrentPopup();
 				}
 				ImGui::SameLine();
@@ -331,7 +337,7 @@ namespace FileDialog {
 						strcpy(file_dialog_error, "Error: You must select a folder!");
 					}
 					else {
-						auto path = file_dialog_current_path + (file_dialog_current_path.back() == '\\' ? "" : "\\") + file_dialog_current_file;
+						auto path = file_dialog_current_path + (file_dialog_current_path.back() == path_separator ? "" : std::string(1, path_separator)) + file_dialog_current_file;
 						strncpy(buffer, path.c_str(), path.length() + 1);
 						strcpy(file_dialog_error, "");
 						reset_everything();
@@ -342,7 +348,7 @@ namespace FileDialog {
 						strcpy(file_dialog_error, "Error: You must select a file!");
 					}
 					else {
-						auto path = file_dialog_current_path + (file_dialog_current_path.back() == '\\' ? "" : "\\") + file_dialog_current_file;
+						auto path = file_dialog_current_path + (file_dialog_current_path.back() == path_separator ? "" : std::string(1, path_separator)) + file_dialog_current_file;
 						strncpy(buffer, path.c_str(), path.length() + 1);
 						strcpy(file_dialog_error, "");
 						reset_everything();
